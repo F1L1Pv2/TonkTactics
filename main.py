@@ -1,10 +1,7 @@
-from calendar import c
-from re import L
-from turtle import up
-from unittest import async_case
 import discord
 import json
 import random
+import asyncio
 from discord.ext import commands
 from discord.ui import Button, View
 
@@ -59,7 +56,7 @@ def move(x, y, author):
         energ = json_data[str(author)]["energy"]
         if(energ > 0):
             json_data[str(author)] = {"emoji": femoji, "cordinates": [
-                fcordinates[0]+x, fcordinates[1]+y], "range": ranges, "life": lives, "energy": energ}
+                fcordinates[0]+x, fcordinates[1]+y], "range": ranges, "life": lives, "energy": energ-1}
     with open("list.json", "w") as f:
         new_json = json.dumps(json_data, indent=4)
         f.write(new_json)
@@ -94,8 +91,11 @@ class TankTactics(commands.Cog):
         with open("list.json", "r") as f:
             json_data = json.loads(f.read())
         energy = json_data[str(member.id)]["energy"]
-        await ctx.send(f"{member.name} has {energy} energy")
+        life = json_data[str(member.id)]["life"]
+        msg = await ctx.send(f"{member.name} has {energy} energy {life} lifes")
         await ctx.message.delete()
+        await asyncio.sleep(2)
+        await msg.delete() 
 
     @commands.command()
     async def shoot(self, ctx, *, member: discord.Member = None):
@@ -120,12 +120,19 @@ class TankTactics(commands.Cog):
                 with open("list.json", "w") as f:
                     new_json = json.dumps(json_data, indent=4)
                     f.write(new_json)
+                await ctx.message.add_reaction("✅")
 
-        with open("viewmessage.txt", "r+") as f:
-            channel = bot.get_channel(ctx.channel.id)
-            msg = await channel.fetch_message(f.read())
+                with open("viewmessage.txt", "r+") as f:
+                    channel = bot.get_channel(ctx.channel.id)
+                    msg = await channel.fetch_message(f.read())
 
-        await msg.edit(content=fillscreen())
+                await msg.edit(content=fillscreen())
+                await asyncio.sleep(2)
+                await ctx.message.delete()
+                return
+
+        await ctx.message.add_reaction("❌")
+        await asyncio.sleep(2)
         await ctx.message.delete()
 
     @commands.command()
@@ -153,11 +160,18 @@ class TankTactics(commands.Cog):
                 new_json = json.dumps(json_data, indent=4)
                 f.write(new_json)
 
-        with open("viewmessage.txt", "r+") as f:
-            channel = bot.get_channel(ctx.channel.id)
-            msg = await channel.fetch_message(f.read())
+            with open("viewmessage.txt", "r+") as f:
+                channel = bot.get_channel(ctx.channel.id)
+                msg = await channel.fetch_message(f.read())
 
-        await msg.edit(content=fillscreen())
+            await msg.edit(content=fillscreen())
+            await ctx.message.add_reaction("✅")
+            await asyncio.sleep(2)
+            await ctx.message.delete()
+            return
+
+        await ctx.message.add_reaction("❌")
+        await asyncio.sleep(2)
         await ctx.message.delete()
 
     @commands.command()
