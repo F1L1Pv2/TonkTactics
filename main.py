@@ -22,7 +22,10 @@ gamestarted = False
 @bot.event
 async def on_ready():
 
+    await bot.add_cog(Admin(bot))
     await bot.add_cog(TankTactics(bot))
+    await bot.add_cog(Movement(bot))
+    await bot.add_cog(Experimental(bot))
 
     print(f'Logged in as {bot.user} (ID: {bot.user.id})')
     member_count = 0
@@ -86,10 +89,35 @@ def fillscreen():
     return replymessage
 
 
-class TankTactics(commands.Cog):
+
+class Admin(commands.Cog):
+
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.command()
+    @commands.has_permissions(kick_members=True)
+    async def nS(self, ctx):
+        """Creates a new screen"""
+
+        screen = await ctx.send(fillscreen())
+        f = open("viewmessage.txt", "w+")
+        f.write(str(screen.id))
+        f.close()
+        await ctx.message.delete()
+
+    @commands.command()
+    @commands.has_permissions(kick_members=True)
+    async def rS(self, ctx):
+        """refreshes screen"""
+
+        with open("viewmessage.txt", "r+") as f:
+            channel = bot.get_channel(ctx.channel.id)
+            msg = await channel.fetch_message(f.read())
+
+        await msg.edit(content=fillscreen())
+        await ctx.message.delete()   
+    
     @commands.command()
     @commands.has_permissions(kick_members=True)
     async def restart(self, ctx):
@@ -117,6 +145,14 @@ class TankTactics(commands.Cog):
         await msg.edit(content="Need More Then 1 player")
         await ctx.message.delete()
 
+
+
+
+class TankTactics(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    
     @commands.command()
     async def stats(self, ctx, *, member: discord.Member = None):
         global gamestarted
@@ -251,30 +287,10 @@ class TankTactics(commands.Cog):
 
         await msg.edit(content=fillscreen())
         await ctx.message.delete()
-
-    @commands.command()
-    @commands.has_permissions(kick_members=True)
-    async def nS(self, ctx):
-        """Creates a new screen"""
-
-        screen = await ctx.send(fillscreen())
-        f = open("viewmessage.txt", "w+")
-        f.write(str(screen.id))
-        f.close()
-        await ctx.message.delete()
-
-    @commands.command()
-    @commands.has_permissions(kick_members=True)
-    async def rS(self, ctx):
-        """refreshes screen"""
-
-        with open("viewmessage.txt", "r+") as f:
-            channel = bot.get_channel(ctx.channel.id)
-            msg = await channel.fetch_message(f.read())
-
-        await msg.edit(content=fillscreen())
-        await ctx.message.delete()
-
+class Movement(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+    
     @commands.command()
     async def left(self, ctx):
 
@@ -362,7 +378,9 @@ class TankTactics(commands.Cog):
             msg = await channel.fetch_message(f.read())
         await msg.edit(content=fillscreen())
         await ctx.message.delete()
-
+class Experimental(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
     @commands.command()
     @commands.has_permissions(kick_members=True)
     async def bC(self, ctx):
@@ -482,7 +500,9 @@ class TankTactics(commands.Cog):
         await ctx.send("", view=upview)
         await ctx.send("", view=midview)
         await ctx.send("", view=downview)
-        await ctx.message.delete()
+        await ctx.message.delete()  
+
+    
 
 
 intents = discord.Intents.default()
