@@ -1,3 +1,4 @@
+from operator import le
 import discord
 import json
 import random
@@ -16,7 +17,7 @@ bot = commands.Bot(command_prefix=commands.when_mentioned_or("."), description=d
 
 token = open("token.txt", "r")
 token = token.read()
-
+gamestarted = False
 
 @bot.event
 async def on_ready():
@@ -45,6 +46,8 @@ def getList(dict):
 
 
 def move(x, y, author):
+    if gamestarted==False:
+        return
     femoji = ""
     fcordinates = []
     with open("list.json", "r+") as f:
@@ -65,6 +68,8 @@ def move(x, y, author):
 def fillscreen():
     with open("list.json", "r") as f:
         json_data = json.loads(f.read())
+    if gamestarted==False:
+        return "Game Not Started"
     replymessage = ""
     for y in range(14):
         for x in range(14):
@@ -77,12 +82,32 @@ def fillscreen():
                     replymessage += json_data[player]["emoji"][0]
 
         replymessage += "\n"
+    
     return replymessage
 
 
 class TankTactics(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.command()
+    async def start(self, ctx):
+        with open("list.json", "r") as f:
+            json_data = json.loads(f.read())
+        if len(json_data.keys())>1:
+            global gamestarted
+            gamestarted = True
+            with open("viewmessage.txt", "r+") as f:
+                channel = bot.get_channel(ctx.channel.id)
+                msg = await channel.fetch_message(f.read())
+            await msg.edit(content=fillscreen())
+            await ctx.message.delete()
+            return
+        with open("viewmessage.txt", "r+") as f:
+                channel = bot.get_channel(ctx.channel.id)
+                msg = await channel.fetch_message(f.read())
+        await msg.edit(content="Need More Then 1 player")
+        await ctx.message.delete()
 
     @commands.command()
     async def stats(self, ctx, *, member: discord.Member = None):
@@ -100,7 +125,6 @@ class TankTactics(commands.Cog):
     @commands.command()
     async def shoot(self, ctx, *, member: discord.Member = None):
         """shoot"""
-
         if member is None:
             return
 
@@ -120,12 +144,21 @@ class TankTactics(commands.Cog):
                 with open("list.json", "w") as f:
                     new_json = json.dumps(json_data, indent=4)
                     f.write(new_json)
-                await ctx.message.add_reaction("✅")
+                
+                
+                    
 
                 with open("viewmessage.txt", "r+") as f:
                     channel = bot.get_channel(ctx.channel.id)
                     msg = await channel.fetch_message(f.read())
-
+                await ctx.message.add_reaction("✅")
+                if len(json_data.keys()) <=1:
+                    await msg.edit(content=f"{ctx.author.name} Won")
+                    global gamestarted
+                    gamestarted = False
+                    await asyncio.sleep(2)
+                    await ctx.message.delete()
+                    return
                 await msg.edit(content=fillscreen())
                 await asyncio.sleep(2)
                 await ctx.message.delete()
