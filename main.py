@@ -91,6 +91,14 @@ class TankTactics(commands.Cog):
         self.bot = bot
 
     @commands.command()
+    @commands.has_permissions(kick_members=True)
+    async def restart(self, ctx):
+        with open("list.json", "w") as f:
+                f.write("{}")
+        await ctx.message.delete()
+
+    @commands.command()
+    @commands.has_permissions(kick_members=True)
     async def start(self, ctx):
         with open("list.json", "r") as f:
             json_data = json.loads(f.read())
@@ -111,6 +119,10 @@ class TankTactics(commands.Cog):
 
     @commands.command()
     async def stats(self, ctx, *, member: discord.Member = None):
+        global gamestarted
+        if gamestarted == 0:
+            await ctx.message.delete()
+            return
         if member is None:
             member = ctx.author
         with open("list.json", "r") as f:
@@ -139,20 +151,20 @@ class TankTactics(commands.Cog):
         if(str(member.id) in json_data):
             if(inrange(playerx, playery, tarx, tary, playerrange)):
                 json_data[str(member.id)]["life"] -= 1
+                json_data[str(ctx.author.id)]["energy"] -= 1
                 if (json_data[str(member.id)]["life"] == 0):
                     json_data.pop(str(member.id))
                 with open("list.json", "w") as f:
                     new_json = json.dumps(json_data, indent=4)
                     f.write(new_json)
-                
-                
-                    
 
                 with open("viewmessage.txt", "r+") as f:
                     channel = bot.get_channel(ctx.channel.id)
                     msg = await channel.fetch_message(f.read())
                 await ctx.message.add_reaction("✅")
                 if len(json_data.keys()) <=1:
+                    with open("list.json", "w") as f:
+                        f.write("{}")
                     await msg.edit(content=f"{ctx.author.name} Won")
                     global gamestarted
                     gamestarted = False
@@ -171,7 +183,9 @@ class TankTactics(commands.Cog):
     @commands.command()
     async def give(self, ctx, member: discord.Member = None, energy: int = None):
         """give energy points"""
-
+        if gamestarted == 0:
+            await ctx.message.delete()
+            return
         if member is None:
             return
 
@@ -233,6 +247,7 @@ class TankTactics(commands.Cog):
         await ctx.message.delete()
 
     @commands.command()
+    @commands.has_permissions(kick_members=True)
     async def nS(self, ctx):
         """Creates a new screen"""
 
@@ -243,6 +258,7 @@ class TankTactics(commands.Cog):
         await ctx.message.delete()
 
     @commands.command()
+    @commands.has_permissions(kick_members=True)
     async def rS(self, ctx):
         """refreshes screen"""
 
@@ -298,9 +314,56 @@ class TankTactics(commands.Cog):
         await ctx.message.delete()
 
     @commands.command()
+    async def upleft(self, ctx):
+
+        move(-1, -1, ctx.author.id)
+
+        with open("viewmessage.txt", "r+") as f:
+            channel = bot.get_channel(ctx.channel.id)
+            msg = await channel.fetch_message(f.read())
+        await msg.edit(content=fillscreen())
+        await ctx.message.delete()
+
+    @commands.command()
+    async def upright(self, ctx):
+
+        move(1, -1, ctx.author.id)
+
+        with open("viewmessage.txt", "r+") as f:
+            channel = bot.get_channel(ctx.channel.id)
+            msg = await channel.fetch_message(f.read())
+        await msg.edit(content=fillscreen())
+        await ctx.message.delete()
+
+    @commands.command()
+    async def downleft(self, ctx):
+
+        move(-1, 1, ctx.author.id)
+
+        with open("viewmessage.txt", "r+") as f:
+            channel = bot.get_channel(ctx.channel.id)
+            msg = await channel.fetch_message(f.read())
+        await msg.edit(content=fillscreen())
+        await ctx.message.delete()
+
+    @commands.command()
+    async def downright(self, ctx):
+
+        move(1, 1, ctx.author.id)
+
+        with open("viewmessage.txt", "r+") as f:
+            channel = bot.get_channel(ctx.channel.id)
+            msg = await channel.fetch_message(f.read())
+        await msg.edit(content=fillscreen())
+        await ctx.message.delete()
+
+    @commands.command()
+    @commands.has_permissions(kick_members=True)
     async def bC(self, ctx):
         """creates button"""
-
+        if gamestarted == 0:
+            await ctx.message.delete()
+            return
         leftb = Button(label="", style=discord.ButtonStyle.grey, emoji="⬅️")
         rightb = Button(label="", style=discord.ButtonStyle.grey, emoji="➡️")
         upb = Button(label="", style=discord.ButtonStyle.grey, emoji="⬆️")
