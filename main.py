@@ -123,6 +123,8 @@ class Admin(commands.Cog):
     async def restart(self, ctx):
         with open("list.json", "w") as f:
                 f.write("{}")
+        global gamestarted
+        gamestarted = False
         await ctx.message.delete()
 
     @commands.command()
