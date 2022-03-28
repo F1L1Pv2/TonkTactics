@@ -167,7 +167,8 @@ class TankTactics(commands.Cog):
             json_data = json.loads(f.read())
         energy = json_data[str(member.id)]["energy"]
         life = json_data[str(member.id)]["life"]
-        msg = await ctx.send(f"{member.name} has {energy} energy {life} lifes")
+        emoji = json_data[str(member.id)]["emoji"][0]
+        msg = await ctx.send(f"{member.name} {emoji} has {energy} energy {life} lifes")
         await ctx.message.delete()
         await asyncio.sleep(2)
         await msg.delete() 
