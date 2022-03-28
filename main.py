@@ -1,4 +1,4 @@
-from operator import le
+from datetime import datetime, time, timedelta
 import discord
 import json
 import random
@@ -7,7 +7,6 @@ from discord.ext import commands
 from discord.ui import Button, View
 
 description = 'bot made by F1L1P.\n'
-
 intents = discord.Intents.default()
 intents.members = True
 intents.message_content = True
@@ -18,6 +17,7 @@ bot = commands.Bot(command_prefix=commands.when_mentioned_or("."), description=d
 token = open("token.txt", "r")
 token = token.read()
 gamestarted = False
+
 
 @bot.event
 async def on_ready():
@@ -168,16 +168,16 @@ class TankTactics(commands.Cog):
                     await msg.edit(content=f"{ctx.author.name} Won")
                     global gamestarted
                     gamestarted = False
-                    await asyncio.sleep(2)
+                    await asyncio.sleep(0.5)
                     await ctx.message.delete()
                     return
                 await msg.edit(content=fillscreen())
-                await asyncio.sleep(2)
+                await asyncio.sleep(0.5)
                 await ctx.message.delete()
                 return
 
         await ctx.message.add_reaction("❌")
-        await asyncio.sleep(2)
+        await asyncio.sleep(0.5)
         await ctx.message.delete()
 
     @commands.command()
@@ -213,12 +213,12 @@ class TankTactics(commands.Cog):
 
             await msg.edit(content=fillscreen())
             await ctx.message.add_reaction("✅")
-            await asyncio.sleep(2)
+            await asyncio.sleep(0.5)
             await ctx.message.delete()
             return
 
         await ctx.message.add_reaction("❌")
-        await asyncio.sleep(2)
+        await asyncio.sleep(0.5)
         await ctx.message.delete()
 
     @commands.command()
@@ -230,6 +230,12 @@ class TankTactics(commands.Cog):
 
         with open("list.json", "r") as f:
             json_data = json.loads(f.read())
+
+        if str(ctx.author.id) in json_data.keys():
+            await ctx.message.add_reaction("❌")
+            await asyncio.sleep(0.5)
+            await ctx.message.delete()
+            return
 
         json_data[ctx.author.id] = {"emoji": emoji, "cordinates": [
             random.randrange(12), random.randrange(12)], "range": 2, "life": 3, "energy": 3}
@@ -482,4 +488,5 @@ class TankTactics(commands.Cog):
 intents = discord.Intents.default()
 intents.message_content = True
 
-bot.run(token)
+if __name__ == "__main__":
+    bot.run(token)
