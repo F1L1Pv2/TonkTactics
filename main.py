@@ -49,7 +49,7 @@ def getList(dict):
 
 
 def move(x, y, author):
-    if gamestarted==False:
+    if gamestarted == False:
         return
     femoji = ""
     fcordinates = []
@@ -71,7 +71,7 @@ def move(x, y, author):
 def fillscreen():
     with open("list.json", "r") as f:
         json_data = json.loads(f.read())
-    if gamestarted==False:
+    if gamestarted == False:
         return "Game Not Started"
     replymessage = ""
     for y in range(14):
@@ -85,9 +85,8 @@ def fillscreen():
                     replymessage += json_data[player]["emoji"][0]
 
         replymessage += "\n"
-    
-    return replymessage
 
+    return replymessage
 
 
 class Admin(commands.Cog):
@@ -116,13 +115,13 @@ class Admin(commands.Cog):
             msg = await channel.fetch_message(f.read())
 
         await msg.edit(content=fillscreen())
-        await ctx.message.delete()   
-    
+        await ctx.message.delete()
+
     @commands.command()
     @commands.has_permissions(kick_members=True)
     async def restart(self, ctx):
         with open("list.json", "w") as f:
-                f.write("{}")
+            f.write("{}")
         global gamestarted
         gamestarted = False
         await ctx.message.delete()
@@ -132,7 +131,7 @@ class Admin(commands.Cog):
     async def start(self, ctx):
         with open("list.json", "r") as f:
             json_data = json.loads(f.read())
-        if len(json_data.keys())>1:
+        if len(json_data.keys()) > 1:
             global gamestarted
             gamestarted = True
             with open("viewmessage.txt", "r+") as f:
@@ -142,19 +141,16 @@ class Admin(commands.Cog):
             await ctx.message.delete()
             return
         with open("viewmessage.txt", "r+") as f:
-                channel = bot.get_channel(ctx.channel.id)
-                msg = await channel.fetch_message(f.read())
+            channel = bot.get_channel(ctx.channel.id)
+            msg = await channel.fetch_message(f.read())
         await msg.edit(content="Need More Then 1 player")
         await ctx.message.delete()
-
-
 
 
 class TankTactics(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    
     @commands.command()
     async def stats(self, ctx, *, member: discord.Member = None):
         global gamestarted
@@ -171,7 +167,7 @@ class TankTactics(commands.Cog):
         msg = await ctx.send(f"{member.name} {emoji} has {energy} energy {life} lifes")
         await ctx.message.delete()
         await asyncio.sleep(2)
-        await msg.delete() 
+        await msg.delete()
 
     @commands.command()
     async def shoot(self, ctx, *, member: discord.Member = None):
@@ -201,7 +197,7 @@ class TankTactics(commands.Cog):
                     channel = bot.get_channel(ctx.channel.id)
                     msg = await channel.fetch_message(f.read())
                 await ctx.message.add_reaction("✅")
-                if len(json_data.keys()) <=1:
+                if len(json_data.keys()) <= 1:
                     with open("list.json", "w") as f:
                         f.write("{}")
                     await msg.edit(content=f"{ctx.author.name} Won")
@@ -290,10 +286,12 @@ class TankTactics(commands.Cog):
 
         await msg.edit(content=fillscreen())
         await ctx.message.delete()
+
+
 class Movement(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-    
+
     @commands.command()
     async def left(self, ctx):
 
@@ -381,9 +379,12 @@ class Movement(commands.Cog):
             msg = await channel.fetch_message(f.read())
         await msg.edit(content=fillscreen())
         await ctx.message.delete()
+
+
 class Experimental(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
     @commands.command()
     @commands.has_permissions(kick_members=True)
     async def bC(self, ctx):
@@ -503,9 +504,7 @@ class Experimental(commands.Cog):
         await ctx.send("", view=upview)
         await ctx.send("", view=midview)
         await ctx.send("", view=downview)
-        await ctx.message.delete()  
-
-    
+        await ctx.message.delete()
 
 
 intents = discord.Intents.default()
