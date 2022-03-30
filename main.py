@@ -11,7 +11,14 @@ intents = discord.Intents.default()
 intents.members = True
 intents.message_content = True
 
-bot = commands.Bot(command_prefix=commands.when_mentioned_or("."), description=description, intents=intents,
+class CustomHelp(commands.MinimalHelpCommand):
+    async def send_pages(self):
+        destination = self.get_destination()
+        for page in self.paginator.pages:
+            emby = discord.Embed(description=page)
+            await destination.send(embed=emby)
+
+bot = commands.Bot(command_prefix=commands.when_mentioned_or("."), help_command=CustomHelp(), description=description, intents=intents,
                    activity=discord.Activity(type=discord.ActivityType.watching, name=".help", status=discord.Status.dnd))
 
 token = open("token.txt", "r")
