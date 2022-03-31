@@ -89,7 +89,7 @@ def fillscreen():
                     break
                 if(json_data[player]["cordinates"][0] == x and json_data[player]["cordinates"][1] == y):
                     replymessage = replymessage[:-1]
-                    replymessage += json_data[player]["emoji"][0]
+                    replymessage += json_data[player]["emoji"]
 
         replymessage += "\n"
 
@@ -151,6 +151,19 @@ class Admin(commands.Cog):
             channel = bot.get_channel(ctx.channel.id)
             msg = await channel.fetch_message(f.read())
         await msg.edit(content="Need More Then 1 player")
+        await ctx.message.delete()
+
+    @commands.command()
+    @commands.has_permissions(kick_members=True)
+    async def forcestart(self, ctx):
+        with open("list.json", "r") as f:
+            json_data = json.loads(f.read())
+        global gamestarted
+        gamestarted = True
+        with open("viewmessage.txt", "r+") as f:
+            channel = bot.get_channel(ctx.channel.id)
+            msg = await channel.fetch_message(f.read())
+        await msg.edit(content=fillscreen())
         await ctx.message.delete()
 
 
