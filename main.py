@@ -153,19 +153,6 @@ class Admin(commands.Cog):
         await msg.edit(content="Need More Then 1 player")
         await ctx.message.delete()
 
-    @commands.command()
-    @commands.has_permissions(kick_members=True)
-    async def forcestart(self, ctx):
-        with open("list.json", "r") as f:
-            json_data = json.loads(f.read())
-        global gamestarted
-        gamestarted = True
-        with open("viewmessage.txt", "r+") as f:
-            channel = bot.get_channel(ctx.channel.id)
-            msg = await channel.fetch_message(f.read())
-        await msg.edit(content=fillscreen())
-        await ctx.message.delete()
-
 
 class TankTactics(commands.Cog):
     def __init__(self, bot):
