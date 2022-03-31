@@ -27,6 +27,16 @@ gamestarted = False
 
 
 @bot.event
+async def on_command_error(ctx, error):
+    #await ctx.message.add_reaction(redX)
+    msg = await ctx.reply(f"❌ `{error}`")
+    await ctx.message.delete()
+    await asyncio.sleep(0.5)
+    await msg.delete()
+#    print(f"ERROR: {error}")
+    raise error
+
+@bot.event
 async def on_ready():
 
     await bot.add_cog(Admin(bot))
@@ -100,6 +110,15 @@ class Admin(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.command()
+    @commands.has_permissions(kick_members=True)
+    async def purge(self, ctx, amount: int):
+        """Clears recent messages"""
+        #await ctx.message.add_reaction(greenTick)
+        await ctx.message.delete()
+        deleted = await ctx.channel.purge(limit=amount)
+        await ctx.channel.send(f'Deleted {len(deleted)} message(s)', delete_after=5)
 
     @commands.command()
     @commands.has_permissions(kick_members=True)
