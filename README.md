@@ -6,7 +6,7 @@
  
  on purpose, I wrote the grammatically wrong name of my bot
  
- ![](https://lh4.googleusercontent.com/H4LGXj9FZUlaI5THOBVF_o98BXxFv86klnfqtTAiQvM3wwlVSpDYi1JESvrsjfgV9Tv_4atqiUTg900GUvPD=w1575-h949)
+ ![](https://raw.githubusercontent.com/F1L1Pv2/TonkTactics/main/readmefiles/output.gif?token=GHSAT0AAAAAABSGQ2U7BC2I5Q6WQU7ZCAVSYSQPYTQ)
 
 # what the F___ is tank turn tactics?
 
